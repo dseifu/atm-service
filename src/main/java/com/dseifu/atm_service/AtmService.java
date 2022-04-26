@@ -19,7 +19,7 @@ public class AtmService {
         formParameters.add("cardNumber",cardNumber);
         formParameters.add("ccv",ccv);
         HashMap<String, String> response = restTemplate.postForObject("http://BANK-SERVICE/verify/card", formParameters, HashMap.class);
-        if(response.get("status").equals("Verified"))
+        if(response!= null && response.get("status") != null && response.get("status").equals("Verified"))
             httpServletRequest.getSession().setAttribute("isVerified","true");
         return response;
     }
@@ -28,10 +28,10 @@ public class AtmService {
         MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
         formParameters.add("pin",pin);
         formParameters.add("cardNumber",cardNumber);
-        if(httpServletRequest.getSession().getAttribute("isVerified")!= null)
-            formParameters.add("isVerified", httpServletRequest.getSession().getAttribute("isVerified").toString());
+        if(httpServletRequest.getSession().getAttribute("isVerified")!= null && httpServletRequest.getSession().getAttribute("isVerified").equals("true"))
+            formParameters.add("isVerified", "true");
         String response = restTemplate.postForObject("http://BANK-SERVICE/Authenticate/pin", formParameters, String.class);
-        if(response.equals("Authenticated"))
+        if(response != null && response.equals("Authenticated"))
             httpServletRequest.getSession().setAttribute("isAuthenticated","true");
         return response;
     }
@@ -40,10 +40,10 @@ public class AtmService {
         MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
         formParameters.add("fingerPrint",fingerPrint);
         formParameters.add("cardNumber",cardNumber);
-        if(httpServletRequest.getSession().getAttribute("isVerified")!= null)
-            formParameters.add("isVerified", httpServletRequest.getSession().getAttribute("isVerified").toString());
+        if(httpServletRequest.getSession().getAttribute("isVerified")!= null && httpServletRequest.getSession().getAttribute("isVerified").equals("true"))
+            formParameters.add("isVerified", "true");
         String response = restTemplate.postForObject("http://BANK-SERVICE/Authenticate/fingerPrint", formParameters, String.class);
-        if(response.equals("Authenticated"))
+        if(response != null && response.equals("Authenticated"))
             httpServletRequest.getSession().setAttribute("isAuthenticated","true");
         return response;
     }
@@ -52,8 +52,8 @@ public class AtmService {
         MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
         formParameters.add("cardNumber",cardNumber);
         formParameters.add("preference",preference);
-        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null)
-            formParameters.add("isAuthenticated", httpServletRequest.getSession().getAttribute("isAuthenticated").toString());
+        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null && httpServletRequest.getSession().getAttribute("isAuthenticated").equals("true"))
+            formParameters.add("isAuthenticated", "true");
         return restTemplate.postForObject("http://BANK-SERVICE/changeAuthenticationPreference",formParameters, String.class);
     }
 
@@ -61,8 +61,8 @@ public class AtmService {
         MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
         formParameters.add("cardNumber",cardNumber);
         formParameters.add("amount",amount);
-        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null)
-            formParameters.add("isAuthenticated", httpServletRequest.getSession().getAttribute("isAuthenticated").toString());
+        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null && httpServletRequest.getSession().getAttribute("isAuthenticated").equals("true"))
+            formParameters.add("isAuthenticated", "true");
         return restTemplate.postForObject("http://BANK-SERVICE/deposit",formParameters, String.class);
     }
 
@@ -70,21 +70,21 @@ public class AtmService {
         MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
         formParameters.add("cardNumber",cardNumber);
         formParameters.add("amount",amount);
-        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null)
-            formParameters.add("isAuthenticated", httpServletRequest.getSession().getAttribute("isAuthenticated").toString());
+        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null && httpServletRequest.getSession().getAttribute("isAuthenticated").equals("true"))
+            formParameters.add("isAuthenticated", "true");
         return restTemplate.postForObject("http://BANK-SERVICE/withdraw",formParameters, String.class);
     }
 
     public String checkBalance(String cardNumber, HttpServletRequest httpServletRequest) {
         MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
         formParameters.add("cardNumber",cardNumber);
-        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null)
-            formParameters.add("isAuthenticated", httpServletRequest.getSession().getAttribute("isAuthenticated").toString());
+        if(httpServletRequest.getSession().getAttribute("isAuthenticated")!= null && httpServletRequest.getSession().getAttribute("isAuthenticated").equals("true"))
+            formParameters.add("isAuthenticated", "true");
         return restTemplate.postForObject("http://BANK-SERVICE/checkBalance", formParameters, String.class);
     }
 
     public String done(HttpServletRequest httpServletRequest) {
         httpServletRequest.getSession().invalidate();
-        return restTemplate.postForObject("http://BANK-SERVICE/done","", String.class);
+        return "Closed";
     }
 }
